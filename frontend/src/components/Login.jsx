@@ -3,12 +3,14 @@
 import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { BUTTON_CLASSES, INPUTWRAPPER } from "../assets/dummy";
-import { EyeOff, Eye , Mail ,Lock,LogIn } from "lucide-react";
+import { EyeOff, Eye, Mail, Lock, LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const INITIAL_FORM = { email: "", password: "" };
-const url = import.meta.env.VITE_API_BASE
+const url = import.meta.env.VITE_API_BASE;
+
+console.log("from login", url);
 
 const Login = ({ onSubmit, onSwitchMode }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -19,30 +21,29 @@ const Login = ({ onSubmit, onSwitchMode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-  const token = localStorage.getItem("token");
-  const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
 
-  if (!token) return;
+    if (!token) return;
 
-  (async () => {
-    try {
-      const { data } = await axios.get(`${url}/api/user/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    (async () => {
+      try {
+        const { data } = await axios.get(`${url}/api/user/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-      if (data.success) {
-        onSubmit?.({ token, userId, ...data.user });
-        toast.success("Session restored. Redirecting...");
-        navigate("/");
-      } else {
+        if (data.success) {
+          onSubmit?.({ token, userId, ...data.user });
+          toast.success("Session restored. Redirecting...");
+          navigate("/");
+        } else {
+          localStorage.clear();
+        }
+      } catch {
         localStorage.clear();
       }
-    } catch {
-      localStorage.clear();
-    }
-  })(); // 👈 VERY IMPORTANT
-}, []);
-
+    })(); // 👈 VERY IMPORTANT
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,43 +55,43 @@ const Login = ({ onSubmit, onSwitchMode }) => {
 
     try {
       const { data } = await axios.post(`${url}/api/user/login`, formData);
-      if(!data.token) throw new Error(data.message || "Login failed")
+      console.log("from login", formData);
+      if (!data.token) throw new Error(data.message || "Login failed");
 
-        localStorage.setItem("token",data.token)
-        localStorage.setItem("userId",data.user.id)
-        setFormData(INITIAL_FORM)
-        onSubmit?.({token:data.token , userId:data.user.id, ...data.user})
-        toast.success('Login successfull Redirecting...')
-        setTimeout(()=>navigate("/"),1000)
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("userId", data.user.id);
+      setFormData(INITIAL_FORM);
+      onSubmit?.({ token: data.token, userId: data.user.id, ...data.user });
+      toast.success("Login successfull Redirecting...");
+      setTimeout(() => navigate("/"), 1000);
     } catch (err) {
-      const msg = err.response?.data?.message || err.message
-      toast.error(msg)
-    }
-    finally{
-      setLoading(false)
+      const msg = err.response?.data?.message || err.message;
+      toast.error(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleSwitchMode = () =>{
-    toast.dismiss()
-    onSwitchMode?.()
-  }
+  const handleSwitchMode = () => {
+    toast.dismiss();
+    onSwitchMode?.();
+  };
 
   const fields = [
     {
-      name:"email",
-      type:"email",
-      placeholder:"Email",
-      icon:Mail
+      name: "email",
+      type: "email",
+      placeholder: "Email",
+      icon: Mail,
     },
     {
-      name:"password",
-      type:showPassword ? "text": "password",
-      placeholder:"Password",
-      icon:Lock,
-      isPassword:true
-    }
-  ]
+      name: "password",
+      type: showPassword ? "text" : "password",
+      placeholder: "Password",
+      icon: Lock,
+      isPassword: true,
+    },
+  ];
 
   return (
     <div className="max-w-md bg-white w-full shadow-lg border border-purple-200 rounded-xl p-8">
@@ -122,17 +123,17 @@ const Login = ({ onSubmit, onSwitchMode }) => {
               required
             />
             {isPassword && (
-            <button
-              type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              className="ml-2 text-gray-500 hover:text-purple-500 transition-colors"
-            >
-              {showPassword ? (
-                <EyeOff className="w-5 h-5" />
-              ) : (
-                <Eye className="w-5 h-5" />
-              )}
-            </button>
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="ml-2 text-gray-500 hover:text-purple-500 transition-colors"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
             )}
           </div>
         ))}

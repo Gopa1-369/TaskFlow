@@ -137,7 +137,7 @@ const handleSave = async (updateTask) =>{
                 {task.priority}
               </span>
             </div>
-            {task.descrition && (
+            {task.description && (
               <p className={TI_CLASSES.description}>{task.description}</p>
             )}
           </div>

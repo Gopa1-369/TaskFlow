@@ -24,6 +24,7 @@ const TaskModal = ({ isOpen, onClose, taskToEdit, onSave, onLogout }) => {
   const [error, setError] = useState(null);
   const today = new Date().toISOString().split("T")[0];
 
+
   useEffect(() => {
     if (!isOpen) return;
     if (taskToEdit) {
@@ -61,12 +62,15 @@ const TaskModal = ({ isOpen, onClose, taskToEdit, onSave, onLogout }) => {
   }, []);
 
   const handleSubmit = useCallback(
+    
     async (e) => {
       e.preventDefault();
       if (taskData.dueDate < today) {
         setError("Due date cannot be in the past.");
         return;
       }
+        
+
       setLoading(true);
       setError(null);
       try {
@@ -75,6 +79,7 @@ const TaskModal = ({ isOpen, onClose, taskToEdit, onSave, onLogout }) => {
         const resp = await fetch(url, {
           method: isEdit ? "PUT" : "POST",
           headers: getHeaders(),
+          
           body: JSON.stringify(taskData),
         });
         if (!resp.ok) {

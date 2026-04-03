@@ -7,10 +7,17 @@ import { Outlet } from "react-router-dom";
 import axios from "axios";
 import { Circle, Clock, TrendingUp, Zap } from "lucide-react";
 
+
+const url = import.meta.env.VITE_API_BASE
+
+
 const Layout = ({ onLogout, user }) => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+
+
 
   const fetchTasks = useCallback(async () => {
     setLoading(true);
@@ -20,7 +27,7 @@ const Layout = ({ onLogout, user }) => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No auth token found");
 
-      const { data } = await axios.get("http://localhost:4000/api/tasks/gp", {
+      const { data } = await axios.get(`${url}/api/tasks/gp`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -114,6 +121,7 @@ const Layout = ({ onLogout, user }) => {
     <div className="min-h-screen bg-gray-50">
       <Navbar user={user} onLogout={onLogout} />
       <Sidebar user={user} tasks={tasks} />
+
 
       <div className="ml-0 xl:ml-64 lg:ml-64 md:ml-16 pt-16 p-3 sm:p-4 md:p-4 transition-all duration-300">
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
